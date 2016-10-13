@@ -20,7 +20,15 @@ class Menu:
 
     def start(self):
         while True:
-            pass
+            if msvcrt.kbhit():
+                key = ord(msvcrt.getch())
+
+                if key == 224: # arrow key
+                    key = ord(msvcrt.getch())
+                    if key == 80:
+                        self.move_down()
+                    elif key == 72:
+                        self.move_up()
 
 if __name__ == "__main__":
 
