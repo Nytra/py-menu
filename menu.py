@@ -11,22 +11,39 @@ import msvcrt, os
 init(autoreset=True)
 
 class Menu:
-    def __init__(self, title="Main Menu", desc="Choose an option:", footer_text="Use the arrow keys to highlight an option and then press enter to select it.", fg=Fore.WHITE, bg=Back.BLUE):
+    def __init__(self, title="", desc="", footer_text="Use the arrow keys to highlight an option and then press enter to select it."):
         self.options = []
 
-        self.outer_bg = bg
-        self.outer_fg = fg
+        self.outer_bg = Back.BLUE
+        self.outer_fg = Fore.WHITE
+        self.outer_style = Style.BRIGHT
+
         self.overlay_bg = Back.WHITE
         self.overlay_fg = Fore.BLACK
+        self.overlay_style = Style.BRIGHT
+
+        self.shadow_bg = Back.BLACK
+        self.shadow_fg = Fore.WHITE
+        self.shadow_style = Style.BRIGHT
+
+        self.option_style = Style.NORMAL
+
         self.selected_bg = Back.BLUE
         self.selected_fg = Fore.WHITE
-        self.shadow_bg = Back.BLACK
-        self.option_fg = Fore.BLUE
         self.selected_style = Style.BRIGHT
-        self.button_style = Style.NORMAL
+
+        self.title_fg = Fore.WHITE
+        self.title_style = Style.BRIGHT
+
+        self.footer_fg = Fore.WHITE
+        self.footer_style = Style.BRIGHT
+
+        self.desc_style = Style.BRIGHT
+
+        self.accent_fg = Fore.WHITE
+        self.accent_style = Style.BRIGHT
 
         self.title = title # The menu title
-        self.title_style = Style.BRIGHT
         self.prog_title = "PyMenu V0.7"
 
         self.footer_text = footer_text
@@ -34,6 +51,9 @@ class Menu:
         self.selected = 0 # The index of the option that is currently selected
         self.desc = desc # A simple description of the menu
         self.alive = True
+
+        self.ok_dialog = False
+        self.dialog_msg = ""
 
         self.update_dimensions()
 
@@ -61,6 +81,12 @@ class Menu:
 
         self.title_x = (self.X_MAX // 2) - (len(self.title) // 2)
         self.title_y = (self.Y_MAX // 10)
+
+        self.desc_x = (self.X_MAX // 2) - (len(self.desc) // 2)
+        self.desc_y = self.overlay_top - self.title_y
+
+        self.msg_x = self.overlay_left + 1
+        self.msg_y = self.overlay_top + 1
 
     def add(self, text, target):
 
@@ -91,7 +117,7 @@ class Menu:
         self.update_dimensions()
 
         # Draw the menu title at the top
-        self.put([self.title_x, self.title_y], self.outer_bg + self.outer_fg + self.title_style + self.title)
+        self.put([self.title_x, self.title_y], self.outer_bg + self.title_fg + self.title_style + self.title)
 
         # Draw the white overlay background
         for y in range(self.overlay_top, self.overlay_bottom):
@@ -109,16 +135,74 @@ class Menu:
             half = len(self.desc.split()) // 2
             first_line = " ".join(word for word in self.desc.split()[:half])
             second_line = " ".join(word for word in self.desc.split()[half:])
-            self.put([self.overlay_left, self.overlay_top], self.overlay_bg + self.overlay_fg + first_line)
-            self.put([self.overlay_left, self.overlay_top+1], self.overlay_bg + self.overlay_fg + second_line)
+            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + first_line)
+            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + second_line)
         else:
-            self.put([self.overlay_left, self.overlay_top], self.overlay_bg + self.overlay_fg + self.desc)
+            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + self.desc)
 
         # Draw the footer text
-        self.put([1, self.Y_MAX-1], self.outer_bg + self.outer_fg + self.title_style + self.footer_text)
+        self.put([1, self.Y_MAX-1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
 
         # Draw the program title in the top left
-        self.put([1, 1], self.outer_bg + self.outer_fg + self.title_style + self.prog_title)
+        self.put([self.X_MAX - len(self.prog_title), self.Y_MAX - 1], self.outer_bg + self.title_fg + self.title_style + self.prog_title)
+
+        # Draw accenting
+        #for x in range(1, self.X_MAX):
+            #self.put([x, 2], self.outer_bg + self.accent_fg + self.accent_style + "═")
+        #for x in range(1, self.X_MAX):
+            #self.put([x, self.title_y + 2], self.outer_bg + self.accent_fg + self.accent_style + "═")
+        for x in range(self.overlay_left + 1, self.overlay_right):
+            self.put([x, self.overlay_bottom - 1], self.overlay_bg + Fore.BLACK + Style.NORMAL + "─")
+            self.put([x, self.overlay_top], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "─")
+        for y in range(self.overlay_top + 1, self.overlay_bottom - 1):
+            self.put([self.overlay_right - 1, y], self.overlay_bg + Fore.BLACK + Style.NORMAL + "│")
+            self.put([self.overlay_left, y], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "│")
+        self.put([self.overlay_right - 1, self.overlay_bottom - 1], self.overlay_bg + Fore.BLACK + Style.NORMAL + "┘")
+        self.put([self.overlay_right - 1, self.overlay_top], self.overlay_bg + Fore.BLACK + Style.NORMAL + "┐")
+        self.put([self.overlay_left, self.overlay_bottom - 1], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "└")
+        self.put([self.overlay_left, self.overlay_top], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "┌")
+
+        if self.dialog_msg:
+            #if len(self.dialog_msg) > self.overlay_width:
+                #half = len(self.dialog_msg.split()) // 2
+                #first_line = " ".join(word for word in self.dialog_msg.split()[:half])
+                #second_line = " ".join(word for word in self.dialog_msg.split()[half:])
+                #self.put([self.msg_x, self.msg_y], self.overlay_bg + self.overlay_fg + Style.NORMAL + first_line)
+                #self.put([self.msg_x, self.msg_y], self.overlay_bg + self.overlay_fg + Style.NORMAL + second_line)
+            #else:
+            s = ""
+            line = 0
+            words = len(self.dialog_msg.split())
+            for index, word in enumerate(self.dialog_msg.split()):
+                word = word.strip()
+                if len(s + word + " ") >= self.overlay_width - 2:
+                    self.put([self.msg_x, self.msg_y + line],
+                             self.overlay_bg + self.overlay_fg + Style.NORMAL + s)
+                    s = word + " "
+                    line += 1
+                elif index + 1 == words:
+                    s += word + " "
+                    self.put([self.msg_x, self.msg_y + line],
+                             self.overlay_bg + self.overlay_fg + Style.NORMAL + s)
+                    line += 1
+                else:
+                    s += word + " "
+
+                #if len(line) > self.overlay_width:
+                    #sections = len(self.dialog_msg.split()) // self.overlay_width
+                    #start = 0
+                    #for s in range(1, sections + 1):
+                        #n = self.overlay_width * s
+                        #l = " ".join(word for word in self.dialog_msg.split()[start:n])
+                        #self.put([self.msg_x, self.msg_y + s],
+                                 #self.overlay_bg + self.overlay_fg + Style.NORMAL + l)
+                    #first_line = " ".join(word for word in self.dialog_msg.split()[:half])
+                    #second_line = " ".join(word for word in self.dialog_msg.split()[half:])
+                #else:
+                    #self.put([self.msg_x, self.msg_y + index], self.overlay_bg + self.overlay_fg + Style.NORMAL + line)
+
+            # Draw the footer text
+            self.put([1, self.Y_MAX - 1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
 
         # Draw the buttons just in case something needs to be changed
         self.draw_buttons()
@@ -130,19 +214,28 @@ class Menu:
         options_drawn = 0        
         for index, option in enumerate(self.options):
             text = self.options[index][0]
-                        
-            option_x = (self.X_MAX // 2) - (len(text)//2) # In the middle
-            option_y = (self.Y_MAX // 2 - (len(self.options) // 2) + options_drawn)
+
+            option_x = (self.X_MAX // 2) - (len(text) // 2)  # In the middle
+            if not self.ok_dialog:
+                option_y = (self.Y_MAX // 2 - (len(self.options) // 2) + options_drawn)
+            else:
+                option_y = self.overlay_bottom - 2
 
             box_x = (self.X_MAX // 2) - (self.overlay_width // 2)
             options_drawn += 1
 
             if index == self.selected:
-                self.put([box_x, option_y], self.overlay_bg + " " + self.selected_bg + self.selected_fg + self.selected_style + "(" + str(index + 1) + ")")
+                if not self.ok_dialog:
+                    self.put([box_x + 1, option_y], self.selected_bg + self.selected_fg + self.selected_style + "(" + str(index + 1) + ")")
                 self.put([option_x, option_y], self.selected_bg + self.selected_fg + self.selected_style + text)
             else:
-                self.put([box_x, option_y], self.overlay_bg + self.option_fg + " (" + str(index + 1) + ")")
-                self.put([option_x, option_y], self.overlay_bg + self.overlay_fg + self.button_style + text)
+                if not self.ok_dialog:
+                    self.put([box_x + 1, option_y], self.overlay_bg + self.overlay_fg + "(" + str(index + 1) + ")")
+                self.put([option_x, option_y], self.overlay_bg + self.overlay_fg + self.option_style + text)
+
+    def is_ok_dialog(self):
+        self.ok_dialog = True
+        self.options = [["OK", self.quit]]
 
     def move_down(self):
         if self.selected >= len(self.options) - 1:
@@ -166,19 +259,25 @@ class Menu:
             if msvcrt.kbhit():
                 key = ord(msvcrt.getch())
 
-                if key == 224: # arrow key
-                    key = ord(msvcrt.getch())
-                    if key == 80:
-                        self.move_down()
-                        self.draw_buttons()
-                    elif key == 72:
-                        self.move_up()
-                        self.draw_buttons()
+                if not self.ok_dialog:
+                    if key == 224: # arrow key
+                        key = ord(msvcrt.getch())
+                        if key == 80:
+                            self.move_down()
+                            self.draw_buttons()
+                        elif key == 72:
+                            self.move_up()
+                            self.draw_buttons()
 
-                elif key == 13: # enter key
-                    self.put([1,1], "")
-                    f = self.options[self.selected][1]
-                    f()
+                    elif key == 13: # enter key
+                        self.put([1,1], "")
+                        f = self.options[self.selected][1]
+                        f()
+                else:
+                    if key == 13: # enter key
+                        self.put([1,1], "")
+                        f = self.options[self.selected][1]
+                        f()
 
 
     def quit(self):
@@ -188,17 +287,20 @@ class Menu:
 
         x,y = coords
 
-        for j in range(self.overlay_left, self.overlay_right):
+        for j in range(self.overlay_left + 1, self.overlay_right - 1):
             self.put([j, y], self.overlay_bg + " ")
 
         self.put([x, y], self.overlay_bg + self.overlay_fg + text)
+
+    def set_dialog_msg(self, msg):
+        self.dialog_msg = msg
 
 if __name__ == "__main__": # A simple menu demonstration will run whenever this program is directly executed
 
     import winsound
 
     def test_function():
-        m.write([m.overlay_left, m.overlay_top+1], "Hello, world!")
+        m.write([m.msg_x, m.msg_y], "Hello, world!")
 
     def dummy():
         pass
@@ -206,7 +308,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     def inc_pitch(val):
         global pitch, bm
         pitch += val
-        bm.write([bm.overlay_left, bm.overlay_top+1],"Pitch: %d" % pitch)
+        bm.write([bm.msg_x, bm.msg_y],"Pitch: %d" % pitch)
 
     def dec_pitch(val):
         global pitch, bm
@@ -215,7 +317,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         else:
             pitch -= val
         #bm.draw_overlay()
-        bm.write([bm.overlay_left, bm.overlay_top + 1], "Pitch: %d" % pitch)
+        bm.write([bm.msg_x, bm.msg_y], "Pitch: %d" % pitch)
 
     def beep():
         global pitch, duration
@@ -223,7 +325,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
     def beep_menu():
         global pitch, duration, bm
-        bm = Menu("Beep Menu", "Use the options to control the pitch of the beep.", bg=global_outer_bg)
+        bm = Menu("Beeping", "Use The Options To Control The Pitch Of The Beep")
         bm.overlay_bg = global_overlay_bg
         bm.add("Beep", beep)
         bm.add("Increase Pitch", lambda: inc_pitch(100))
@@ -235,7 +337,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     def sys_config():
 
         def change_outbg():
-            c = Menu("Change Outer Background", "Please select a colour.", bg=global_outer_bg)
+            c = Menu("Change Outer Background", "Select A Colour")
 
             def set(colour):
                 global global_outer_bg
@@ -258,7 +360,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             sc.redraw()
 
         def change_overbg():
-            c = Menu("Change Outer Background", "Please select a colour.", bg=global_outer_bg)
+            c = Menu("Change Outer Background", "Select A Colour")
 
             def set(colour):
                 global global_overlay_bg
@@ -280,7 +382,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             c.start()
             sc.redraw()
 
-        sc = Menu("System Configuration", "Modify system settings.", bg=global_outer_bg)
+        sc = Menu("Colour Settings", "Give Your Menu A New Coat Of Paint!")
         sc.overlay_bg = global_overlay_bg
         sc.add("Outer Background", change_outbg)
         sc.add("Overlay Background", change_overbg)
@@ -290,7 +392,21 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
 
     def power_mon():
-        pass
+        pm = Menu("Dialog Boxes", "Examples of Dialog Boxes")
+
+        def show_text():
+            tm = Menu("Alice in Wonderland", "Alice's Adventures in Wonderland")
+            tm.is_ok_dialog()
+            tm.set_dialog_msg(
+                "There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself \"Oh dear! Oh dear! I shall be too late!\" (when she thought it over afterwards it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but, when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and was just in time to see it pop down a large rabbit-hole under the hedge.")
+            tm.start()
+            pm.redraw()
+
+
+        pm.add("Alice in Wonderland", show_text)
+        pm.add("Back", pm.quit)
+        pm.start()
+        m.redraw()
 
     #title = input("Menu title: ")
 
@@ -299,12 +415,12 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     global_outer_bg = Back.BLUE
     global_overlay_bg = Back.WHITE
 
-    m = Menu(bg=global_outer_bg)
+    m = Menu("Main Menu", "Choose An Option")
     m.overlay_bg = global_overlay_bg
     m.add("Hello World", target=test_function)
-    m.add("Power Monitoring", target=power_mon)
-    m.add("Beep Menu", target= beep_menu)
-    m.add("Settings", target=sys_config)
+    m.add("Dialog Boxes", target=power_mon)
+    m.add("Beeping", target= beep_menu)
+    m.add("Colour Settings", target=sys_config)
     m.add("Exit", target= lambda: quit() )
     try:
         m.start()
