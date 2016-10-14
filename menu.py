@@ -29,36 +29,13 @@ class Menu:
 
                 self.put([x,y], self.bg + " ")
 
-        
-
         for y in range(1, self.Y_MAX):
             for x in range(1, self.X_MAX):
 
                 if y == (self.Y_MAX // 10) and x == (self.X_MAX // 2) - (len(self.title) // 2):
                     self.put([x,y], self.bg + self.fg + self.title)
 
-
-
-
-        options_drawn = 0        
-        for index, option in enumerate(self.options):
-            text = self.options[index][0]
-                        
-            option_x = (self.X_MAX//2) - (len(text)//2) # In the middle
-            option_y = (self.Y_MAX//2) + options_drawn
-
-            box_x = (self.X_MAX // 3)
-            options_drawn += 1
-            for x in range(box_x, self.X_MAX - box_x):
-                self.put([x,option_y], Back.WHITE + " ")
-            self.put([box_x,option_y], Back.WHITE + Fore.BLACK + str(index+1) + ")")
-            if index == self.selected:
-                bg = Back.GREEN
-                fg = Fore.BLACK
-            else:
-                bg = Back.WHITE
-                fg = Fore.BLACK
-            self.put([option_x,option_y], bg + fg + text)
+        self.draw_buttons()
 
     def draw_buttons(self):
         options_drawn = 0        
@@ -72,7 +49,7 @@ class Menu:
             options_drawn += 1
             for x in range(box_x, self.X_MAX - box_x):
                 self.put([x,option_y], Back.WHITE + " ")
-            self.put([box_x,option_y], Back.WHITE + Fore.BLACK + str(index+1) + ")")
+            self.put([box_x,option_y], Back.WHITE + Fore.BLACK + " " + str(index+1) + ")")
             if index == self.selected:
                 bg = Back.GREEN
                 fg = Fore.BLACK
