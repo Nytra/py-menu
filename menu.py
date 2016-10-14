@@ -1,9 +1,12 @@
 from colorama import init, Fore, Back, Style
-import msvcrt, shutil
+import msvcrt, os
 
-# The Python Text-Based Menu Framework
-# Created and developed by Sam Scott
+# A Python Framework for the Creation of Text-Based Menu Interfaces
+# Created and developed by Sam Scott, aged 17 years and 7 months
 # 13-10-2016
+
+# GitHub Repo: https://github.com/Nytra/py-menu
+# Here you'll be able to find all of the latest updates as soon as they're available
 
 init(autoreset=True)
 
@@ -24,6 +27,7 @@ class Menu:
 
         self.title = title # The menu title
         self.title_style = Style.BRIGHT
+        self.prog_title = "PyMenu V0.7"
 
         self.footer_text = footer_text
 
@@ -33,11 +37,15 @@ class Menu:
 
         self.update_dimensions()
 
+    def set_program_title(self, name):
+        self.prog_title = name
+
     def update_dimensions(self):
 
         # Get the latest terminal dimensions
 
-        self.X_MAX, self.Y_MAX = shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1
+        #self.X_MAX, self.Y_MAX = shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1
+        self.X_MAX, self.Y_MAX = os.get_terminal_size().columns, os.get_terminal_size().lines + 1
 
         self.option_width = self.X_MAX // 3
         self.option_height = 1
@@ -109,6 +117,9 @@ class Menu:
         # Draw the footer text
         self.put([1, self.Y_MAX-1], self.outer_bg + self.outer_fg + self.title_style + self.footer_text)
 
+        # Draw the program title in the top left
+        self.put([1, 1], self.outer_bg + self.outer_fg + self.title_style + self.prog_title)
+
         # Draw the buttons just in case something needs to be changed
         self.draw_buttons()
 
@@ -149,7 +160,7 @@ class Menu:
         self.redraw()
         while self.alive:
 
-            if [self.X_MAX, self.Y_MAX] != [shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1]:
+            if [self.X_MAX, self.Y_MAX] != [os.get_terminal_size().columns, os.get_terminal_size().lines + 1]: #[shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1]:
                 self.redraw()
 
             if msvcrt.kbhit():
