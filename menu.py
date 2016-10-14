@@ -52,7 +52,34 @@ class Menu:
             for x in range(box_x, self.X_MAX - box_x):
                 self.put([x,option_y], Back.WHITE + " ")
             self.put([box_x,option_y], Back.WHITE + Fore.BLACK + str(index+1) + ")")
-            self.put([option_x,option_y], Back.WHITE + Fore.BLACK + text)
+            if index == self.selected:
+                bg = Back.GREEN
+                fg = Fore.BLACK
+            else:
+                bg = Back.WHITE
+                fg = Fore.BLACK
+            self.put([option_x,option_y], bg + fg + text)
+
+    def draw_buttons(self):
+        options_drawn = 0        
+        for index, option in enumerate(self.options):
+            text = self.options[index][0]
+                        
+            option_x = (self.X_MAX//2) - (len(text)//2) # In the middle
+            option_y = (self.Y_MAX//2) + options_drawn
+
+            box_x = (self.X_MAX // 3)
+            options_drawn += 1
+            for x in range(box_x, self.X_MAX - box_x):
+                self.put([x,option_y], Back.WHITE + " ")
+            self.put([box_x,option_y], Back.WHITE + Fore.BLACK + str(index+1) + ")")
+            if index == self.selected:
+                bg = Back.GREEN
+                fg = Fore.BLACK
+            else:
+                bg = Back.WHITE
+                fg = Fore.BLACK
+            self.put([option_x,option_y], bg + fg + text)
 
     def move_down(self):
         if self.selected >= len(self.options) - 1:
@@ -75,10 +102,10 @@ class Menu:
                     key = ord(msvcrt.getch())
                     if key == 80:
                         self.move_down()
-                        self.draw()
+                        self.draw_buttons()
                     elif key == 72:
                         self.move_up()
-                        self.draw()
+                        self.draw_buttons()
                 elif key == 13: # enter key
                     self.put([1,1], "")
                     f = self.options[self.selected][1]
@@ -86,6 +113,8 @@ class Menu:
                     self.draw()
 
 if __name__ == "__main__":
+
+    import winsound
 
     def test_function():
         print("Hello, world!")
@@ -96,6 +125,7 @@ if __name__ == "__main__":
 
     m = Menu()
     m.add("Hello World", target=test_function)
+    m.add("Beep", target= lambda: winsound.Beep(500, 200))
     m.add("Exit", target= lambda: quit() )
     try:
         m.start()
