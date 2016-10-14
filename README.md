@@ -9,7 +9,9 @@ Buttons can be added to the menu by calling the .add method and passing it a nam
 For example:
 
   myMenu = pymenu.Menu("Main Menu", "Choose An Option", "Some random footer text")
+  
   myMenu.add("A button", some_function)
+  
   myMenu.add("Another button", lambda: print("Hello, world"))
 
 Once you have added all of your buttons, you can activate the menu by calling the start method.
