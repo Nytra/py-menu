@@ -41,6 +41,7 @@ class Menu:
         self.footer_style = Style.BRIGHT
 
         self.desc_style = Style.NORMAL
+        self.desc_fg = Fore.BLUE
 
         self.accent_fg = Fore.WHITE
         self.accent_style = Style.BRIGHT
@@ -168,10 +169,10 @@ class Menu:
             half = len(self.desc.split()) // 2
             first_line = " ".join(word for word in self.desc.split()[:half])
             second_line = " ".join(word for word in self.desc.split()[half:])
-            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + first_line)
-            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + second_line)
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.desc_fg + self.desc_style + first_line)
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.desc_fg + self.desc_style + second_line)
         else:
-            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + self.desc)
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.desc_fg + self.desc_style + self.desc)
 
         if self.dialog_msg:
 
