@@ -14,6 +14,7 @@ PyMenu can display dialog boxes which contain text. The text will be automatical
 ---
 
 ![Image of Dynamic Resizing](https://github.com/Nytra/PyMenu-Framework/blob/master/images/resize.png)
+
 The framework will automatically detect when the terminal dimensions have changed and it will resize the interface accordingly.
 
 ---
