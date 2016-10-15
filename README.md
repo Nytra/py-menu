@@ -23,5 +23,12 @@ The framework will automatically detect when the terminal dimensions have change
 ---
 
 ![Image of PyMenu Code](https://github.com/Nytra/PyMenu-Framework/blob/master/images/demo.png)
+PyMenu is designed to be easily implemented alongside existing code. The possibilities are practically endless.
 
 ---
+
+##Limitations
+
+---
+
+PyMenu currently does not support scrolling of any kind. So any text that exceeds the maximum overlay height will spill out onto the background. I am working on this.
