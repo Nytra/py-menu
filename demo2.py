@@ -9,7 +9,8 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         sound = False
 
     def test_function():
-        m.write([m.msg_x, m.msg_y], "Hello, world!")
+        #m.write([m.msg_x, m.msg_y], "Hello, world!")
+        m.msg("Hello, world!")
 
     def dummy():
         pass
@@ -17,7 +18,8 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     def inc_pitch(val):
         global pitch, bm
         pitch += val
-        bm.write([bm.msg_x, bm.msg_y],"Pitch: %d" % pitch)
+        #bm.write([bm.msg_x, bm.msg_y],"Pitch: %d" % pitch)
+        bm.msg("Pitch: %d" % pitch)
 
     def dec_pitch(val):
         global pitch, bm
@@ -26,14 +28,16 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         else:
             pitch -= val
         #bm.draw_overlay()
-        bm.write([bm.msg_x, bm.msg_y], "Pitch: %d" % pitch)
+        #bm.write([bm.msg_x, bm.msg_y], "Pitch: %d" % pitch)
+        bm.msg("Pitch: %d" % pitch)
 
     def beep():
         global pitch, duration
         if sound:
             winsound.Beep(pitch, duration)
         else:
-            bm.write([bm.msg_x, bm.msg_y], "Sound is disabled on this platform.")
+            #bm.write([bm.msg_x, bm.msg_y], "Sound is disabled on this platform.")
+            bm.msg("Sound is disabled on this platform.")
 
     def beep_menu():
         global pitch, duration, bm
@@ -103,19 +107,26 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         m.redraw()
 
 
-    def power_mon():
+    def dialog_demo():
         pm = Menu("Dialog Boxes", "Examples of Dialog Boxes")
 
-        def show_text():
+        def alice():
             tm = Menu("Alice in Wonderland", "Alice's Adventures in Wonderland")
-            tm.is_ok_dialog()
             tm.set_dialog_msg(
                 "There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself \"Oh dear! Oh dear! I shall be too late!\" (when she thought it over afterwards it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but, when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and was just in time to see it pop down a large rabbit-hole under the hedge.")
             tm.start()
             pm.redraw()
 
+        def error_msg():
+            tm = Menu("ERROR", "CODE: A322", "")
+            tm.set_dialog_msg(
+                "An error occurred while trying to set power efficacy for Generator 7 in Zone 6. Recommend manual intervention."
+            )
+            tm.start()
+            pm.redraw()
 
-        pm.add("Alice in Wonderland", show_text)
+        pm.add("Alice in Wonderland", alice)
+        pm.add("Error Message", error_msg)
         pm.add("Back", pm.quit)
         pm.start()
         m.redraw()
@@ -130,7 +141,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     m = Menu("Main Menu", "Choose An Option")
     m.overlay_bg = global_overlay_bg
     m.add("Hello World", target=test_function)
-    m.add("Dialog Boxes", target=power_mon)
+    m.add("Dialog Boxes", target=dialog_demo)
     m.add("Beeping", target= beep_menu)
     m.add("Colour Settings", target=sys_config)
     m.add("Exit", target= lambda: quit() )

@@ -44,7 +44,7 @@ class Menu:
         self.accent_style = Style.BRIGHT
 
         self.title = title # The menu title
-        self.prog_title = "PyMenu V0.7"
+        self.prog_title = "PyMenu V0.86a"
 
         self.footer_text = footer_text
 
@@ -163,13 +163,7 @@ class Menu:
         self.put([self.overlay_left, self.overlay_top], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "┌")
 
         if self.dialog_msg:
-            #if len(self.dialog_msg) > self.overlay_width:
-                #half = len(self.dialog_msg.split()) // 2
-                #first_line = " ".join(word for word in self.dialog_msg.split()[:half])
-                #second_line = " ".join(word for word in self.dialog_msg.split()[half:])
-                #self.put([self.msg_x, self.msg_y], self.overlay_bg + self.overlay_fg + Style.NORMAL + first_line)
-                #self.put([self.msg_x, self.msg_y], self.overlay_bg + self.overlay_fg + Style.NORMAL + second_line)
-            #else:
+
             s = ""
             line = 0
             words = len(self.dialog_msg.split())
@@ -187,19 +181,6 @@ class Menu:
                     line += 1
                 else:
                     s += word + " "
-
-                #if len(line) > self.overlay_width:
-                    #sections = len(self.dialog_msg.split()) // self.overlay_width
-                    #start = 0
-                    #for s in range(1, sections + 1):
-                        #n = self.overlay_width * s
-                        #l = " ".join(word for word in self.dialog_msg.split()[start:n])
-                        #self.put([self.msg_x, self.msg_y + s],
-                                 #self.overlay_bg + self.overlay_fg + Style.NORMAL + l)
-                    #first_line = " ".join(word for word in self.dialog_msg.split()[:half])
-                    #second_line = " ".join(word for word in self.dialog_msg.split()[half:])
-                #else:
-                    #self.put([self.msg_x, self.msg_y + index], self.overlay_bg + self.overlay_fg + Style.NORMAL + line)
 
             # Draw the footer text
             self.put([1, self.Y_MAX - 1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
@@ -262,12 +243,18 @@ class Menu:
                 if not self.ok_dialog:
                     if key == 224: # arrow key
                         key = ord(msvcrt.getch())
-                        if key == 80:
+
+                        if key == 80: # down
                             self.move_down()
                             self.draw_buttons()
-                        elif key == 72:
+                        elif key == 72: # up
                             self.move_up()
                             self.draw_buttons()
+
+                        elif key == 75: # left
+                            pass
+                        elif key == 77: # right
+                            pass
 
                     elif key == 13: # enter key
                         self.put([1,1], "")
@@ -279,18 +266,43 @@ class Menu:
                         f = self.options[self.selected][1]
                         f()
 
-
     def quit(self):
         self.alive = False
 
-    def write(self, coords, text):
+    def set_dialog_msg(self, msg):
+        self.is_ok_dialog()
+        self.dialog_msg = msg
 
-        x,y = coords
+    def msg(self, text):
+        x,y = self.msg_x, self.msg_y
 
         for j in range(self.overlay_left + 1, self.overlay_right - 1):
             self.put([j, y], self.overlay_bg + " ")
 
-        self.put([x, y], self.overlay_bg + self.overlay_fg + text)
+        self.put([x, y], self.overlay_bg + self.overlay_fg + self.overlay_style + text)
 
-    def set_dialog_msg(self, msg):
-        self.dialog_msg = msg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
