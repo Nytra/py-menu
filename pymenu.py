@@ -11,6 +11,9 @@ import msvcrt, os
 init(autoreset=True)
 
 class Menu:
+
+    prog_title = "PyMenu V0.92a"
+
     def __init__(self, title="", desc="", footer_text="Use the arrow keys to highlight an option and then press enter to select it."):
         self.options = []
 
@@ -47,7 +50,7 @@ class Menu:
         self.accent_style = Style.BRIGHT
 
         self.title = title # The menu title
-        self.prog_title = "PyMenu V0.92a"
+        #self.prog_title =
 
         self.footer_text = footer_text
 
@@ -57,11 +60,12 @@ class Menu:
 
         self.ok_dialog = False
         self.dialog_msg = ""
+        self.buffer = "" # keyboard buffer
 
         self.update_dimensions()
 
     def set_program_title(self, name):
-        self.prog_title = name
+        Menu.prog_title = name
 
     def update_dimensions(self):
 
@@ -146,7 +150,7 @@ class Menu:
         self.put([1, self.Y_MAX-1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
 
         # Draw the program title in the top left
-        self.put([self.X_MAX - len(self.prog_title), self.Y_MAX - 1], self.outer_bg + self.title_fg + self.title_style + self.prog_title)
+        self.put([self.X_MAX - len(self.prog_title), self.Y_MAX - 1], self.outer_bg + self.title_fg + self.title_style + Menu.prog_title)
 
         # Draw accenting
         #for x in range(1, self.X_MAX):
@@ -231,6 +235,10 @@ class Menu:
             else:
                 self.selected -= 1
 
+    def key_buffer(self, char):
+        self.buffer += char
+        self.msg(self.buffer)
+
     def start(self):
         self.redraw()
         while self.alive:
@@ -240,6 +248,14 @@ class Menu:
 
             if msvcrt.kbhit():
                 key = ord(msvcrt.getch())
+
+                if key == 8:
+                    self.buffer = self.buffer[:-1]
+                    self.msg(self.buffer)
+
+                if str(chr(key)).lower() in "abcdefghijklmnopqrstuvwxyz,./?!\"\'£;:$%^&*()[]{}@#~/\\<>|-_=+¬`¦1234567890 ":
+                    char = str(chr(key))
+                    self.key_buffer(char)
 
                 if not self.ok_dialog:
                     if key == 224: # arrow key

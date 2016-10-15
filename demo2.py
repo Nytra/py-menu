@@ -153,6 +153,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
             def set_colour(colour):
                 tm.outer_bg = colour
+                pm.outer_bg = colour
                 tm.quit()
 
             tm = Menu("Colour Choice", "Make A Decision", "")
@@ -167,6 +168,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm.start()
             pm.redraw()
 
+        #tm = Menu("Colour Choice", "Make A Decision", "")
         pm.add("Alice in Wonderland", alice)
         pm.add("Error Message", error_msg)
         pm.add("Small Dialog Box", short_msg)
@@ -184,6 +186,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     global_overlay_bg = Back.WHITE
 
     m = Menu("Main Menu", "Choose An Option")
+    m.set_program_title(Menu.prog_title + " Demonstration")
     m.overlay_bg = global_overlay_bg
     m.add("Hello World", target=test_function)
     m.add("Dialog Boxes", target=dialog_demo)
