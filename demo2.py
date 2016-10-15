@@ -113,6 +113,8 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm = Menu("Alice in Wonderland", "Alice's Adventures in Wonderland")
             tm.set_dialog_msg(
                 "There was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself \"Oh dear! Oh dear! I shall be too late!\" (when she thought it over afterwards it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but, when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and was just in time to see it pop down a large rabbit-hole under the hedge.")
+            tm.add("OK", tm.quit)
+            #tm.add("Cancel", self.quit)
             tm.start()
             pm.redraw()
 
@@ -121,6 +123,8 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm.set_dialog_msg(
                 "An error occurred while trying to set power efficacy for Generator 7 in Zone 6. Recommend manual intervention."
             )
+            tm.add("OK", tm.quit)
+            #tm.add("Cancel", self.quit)
             tm.start()
             pm.redraw()
 
@@ -129,12 +133,45 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm.set_dialog_msg(
                 "Blah"
             )
+            tm.add("OK", tm.quit)
+            tm.add("\"Blah\" to you, too.", tm.quit)
+            #tm.add("Cancel", self.quit)
+            tm.start()
+            pm.redraw()
+
+        def choice():
+            tm = Menu("Multiple Choice", "Make A Decision", "")
+            tm.set_dialog_msg(
+                "Are you sure you want to proceed?"
+            )
+            tm.add("OK", tm.quit)
+            tm.add("Cancel", tm.quit)
+            tm.start()
+            pm.redraw()
+
+        def colours():
+
+            def set_colour(colour):
+                tm.outer_bg = colour
+                tm.quit()
+
+            tm = Menu("Colour Choice", "Make A Decision", "")
+            tm.set_dialog_msg(
+                "Choose a colour from the selection below."
+            )
+            tm.add("Green", lambda: set_colour(Back.GREEN))
+            tm.add("Magenta", lambda: set_colour(Back.MAGENTA))
+            tm.add("White", lambda: set_colour(Back.WHITE))
+            tm.add("Blue", lambda: set_colour(Back.BLUE))
+            tm.add("Cancel", tm.quit)
             tm.start()
             pm.redraw()
 
         pm.add("Alice in Wonderland", alice)
         pm.add("Error Message", error_msg)
         pm.add("Small Dialog Box", short_msg)
+        pm.add("Confirmation Dialog Box", choice)
+        pm.add("Colour Selection", colours)
         pm.add("Back", pm.quit)
         pm.start()
         m.redraw()

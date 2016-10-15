@@ -47,7 +47,7 @@ class Menu:
         self.accent_style = Style.BRIGHT
 
         self.title = title # The menu title
-        self.prog_title = "PyMenu V0.86a"
+        self.prog_title = "PyMenu V0.92a"
 
         self.footer_text = footer_text
 
@@ -79,10 +79,10 @@ class Menu:
         else:
             wrapped = self.word_wrapped_text(self.dialog_msg)
             self.overlay_height = len(wrapped) +  4
-            self.overlay_width = len(wrapped[0]) + 4
-            for line in wrapped:
-                if len(line) > self.overlay_width - 2:
-                    self.overlay_width = len(line) + 2
+            self.overlay_width = self.X_MAX // 2 #len(wrapped[0]) + 4
+            #for line in wrapped:
+                #if len(line) > self.overlay_width - 2:
+                    #self.overlay_width = len(line) + 2
 
         self.overlay_top = (self.Y_MAX // 2) - (self.overlay_height // 2) # top y coord
         self.overlay_bottom = self.overlay_top + self.overlay_height # bottom y coord
@@ -195,10 +195,11 @@ class Menu:
         for index, option in enumerate(self.options):
             text = self.options[index][0]
 
-            option_x = (self.X_MAX // 2) - (len(text) // 2)  # In the middle
             if not self.ok_dialog:
+                option_x = (self.X_MAX // 2) - (len(text) // 2)  # In the middle
                 option_y = (self.Y_MAX // 2 - (len(self.options) // 2) + options_drawn)
             else:
+                option_x = self.overlay_left + ((self.overlay_width // (len(self.options) + 1)) * (index + 1)) - (len(text) // 2) #(self.X_MAX // 2) - (len(text) // 2)  # In the middle
                 option_y = self.overlay_bottom - 2
 
             box_x = (self.X_MAX // 2) - (self.overlay_width // 2)
@@ -215,19 +216,20 @@ class Menu:
 
     def is_ok_dialog(self):
         self.ok_dialog = True
-        self.options = [["OK", self.quit]]
 
     def move_down(self):
-        if self.selected >= len(self.options) - 1:
-            self.selected = 0
-        else:
-            self.selected += 1
+        if len(self.options) > 1:
+            if self.selected >= len(self.options) - 1:
+                self.selected = 0
+            else:
+                self.selected += 1
 
     def move_up(self):
-        if self.selected <= 0:
-            self.selected = len(self.options) - 1
-        else:
-            self.selected -= 1
+        if len(self.options) > 1:
+            if self.selected <= 0:
+                self.selected = len(self.options) - 1
+            else:
+                self.selected -= 1
 
     def start(self):
         self.redraw()
@@ -250,18 +252,21 @@ class Menu:
                             self.move_up()
                             self.draw_buttons()
 
-                        elif key == 75: # left
-                            pass
-                        elif key == 77: # right
-                            pass
-
                     elif key == 13: # enter key
-                        self.put([1,1], "")
+                        #self.put([1,1], "")
                         f = self.options[self.selected][1]
                         f()
                 else:
-                    if key == 13: # enter key
-                        self.put([1,1], "")
+                    if key == 224:  # arrow key
+                        key = ord(msvcrt.getch())
+                        if key == 75:  # left
+                            self.move_up()
+                            self.draw_buttons()
+                        elif key == 77:  # right
+                            self.move_down()
+                            self.draw_buttons()
+                    elif key == 13:  # enter key
+                        #self.put([1, 1], "")
                         f = self.options[self.selected][1]
                         f()
 
