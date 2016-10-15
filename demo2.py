@@ -9,8 +9,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         sound = False
 
     def test_function():
-        #m.write([m.msg_x, m.msg_y], "Hello, world!")
-        m.msg("Hello, world!")
+        m.msg(" ".join("Hello, world!" for x in range(6)))
 
     def dummy():
         pass
@@ -125,8 +124,17 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm.start()
             pm.redraw()
 
+        def short_msg():
+            tm = Menu("Small Dialog Box", ":)", "")
+            tm.set_dialog_msg(
+                "Blah"
+            )
+            tm.start()
+            pm.redraw()
+
         pm.add("Alice in Wonderland", alice)
         pm.add("Error Message", error_msg)
+        pm.add("Small Dialog Box", short_msg)
         pm.add("Back", pm.quit)
         pm.start()
         m.redraw()

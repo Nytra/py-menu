@@ -22,6 +22,8 @@ class Menu:
         self.overlay_fg = Fore.BLACK
         self.overlay_style = Style.BRIGHT
 
+        self.msg_style = Style.NORMAL
+
         self.shadow_bg = Back.BLACK
         self.shadow_fg = Fore.WHITE
         self.shadow_style = Style.BRIGHT
@@ -38,7 +40,7 @@ class Menu:
         self.footer_fg = Fore.WHITE
         self.footer_style = Style.BRIGHT
 
-        self.desc_style = Style.BRIGHT
+        self.desc_style = Style.NORMAL
 
         self.accent_fg = Fore.WHITE
         self.accent_style = Style.BRIGHT
@@ -70,20 +72,29 @@ class Menu:
         self.option_width = self.X_MAX // 3
         self.option_height = 1
 
-        self.overlay_width = self.X_MAX // 2
-        self.overlay_height = self.Y_MAX // 2
+        if not self.ok_dialog:
+            self.overlay_width = self.X_MAX // 2
+            self.overlay_height = self.Y_MAX // 2
+        else:
+            wrapped = self.word_wrapped_text(self.dialog_msg)
+            self.overlay_height = len(wrapped) +  4
+            self.overlay_width = len(wrapped[0]) + 4
+            for line in wrapped:
+                if len(line) > self.overlay_width - 2:
+                    self.overlay_width = len(line) + 2
 
         self.overlay_top = (self.Y_MAX // 2) - (self.overlay_height // 2) # top y coord
-        self.overlay_bottom = self.Y_MAX - (self.overlay_height // 2) # bottom y coord
+        self.overlay_bottom = self.overlay_top + self.overlay_height # bottom y coord
 
         self.overlay_left = (self.X_MAX // 2) - (self.overlay_width // 2) # leftmost x coord
-        self.overlay_right = self.X_MAX - (self.overlay_width // 2) # rightmost x coord
+        #self.overlay_right = self.X_MAX - (self.overlay_width // 2) # rightmost x coord
+        self.overlay_right = self.overlay_left + self.overlay_width
 
         self.title_x = (self.X_MAX // 2) - (len(self.title) // 2)
         self.title_y = (self.Y_MAX // 10)
 
-        self.desc_x = (self.X_MAX // 2) - (len(self.desc) // 2)
-        self.desc_y = self.overlay_top - self.title_y
+        self.desc_x = self.overlay_left + 1#self.overlay_right - (self.overlay_width // 2) - (len(self.desc) // 2)#(self.X_MAX // 2) - (len(self.desc) // 2)
+        self.desc_y = self.overlay_top #// 2 + self.title_y // 2
 
         self.msg_x = self.overlay_left + 1
         self.msg_y = self.overlay_top + 1
@@ -130,16 +141,6 @@ class Menu:
         for x in range(self.overlay_left + 1, self.overlay_right + 1):
             self.put([x, self.overlay_bottom], self.shadow_bg + " ")
 
-        # Draw the description at the top of the overlay box
-        if len(self.desc) > self.overlay_width:
-            half = len(self.desc.split()) // 2
-            first_line = " ".join(word for word in self.desc.split()[:half])
-            second_line = " ".join(word for word in self.desc.split()[half:])
-            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + first_line)
-            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + second_line)
-        else:
-            self.put([self.desc_x, self.desc_y], self.outer_bg + self.outer_fg + self.desc_style + self.desc)
-
         # Draw the footer text
         self.put([1, self.Y_MAX-1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
 
@@ -162,28 +163,25 @@ class Menu:
         self.put([self.overlay_left, self.overlay_bottom - 1], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "└")
         self.put([self.overlay_left, self.overlay_top], self.overlay_bg + Fore.BLACK + Style.BRIGHT + "┌")
 
+        # Draw the description at the top of the overlay box
+        if len(self.desc) > self.overlay_width:
+            half = len(self.desc.split()) // 2
+            first_line = " ".join(word for word in self.desc.split()[:half])
+            second_line = " ".join(word for word in self.desc.split()[half:])
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + first_line)
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + second_line)
+        else:
+            self.put([self.desc_x, self.desc_y], self.overlay_bg + self.overlay_fg + self.desc_style + self.desc)
+
         if self.dialog_msg:
 
-            s = ""
-            line = 0
-            words = len(self.dialog_msg.split())
-            for index, word in enumerate(self.dialog_msg.split()):
-                word = word.strip()
-                if len(s + word + " ") >= self.overlay_width - 2:
-                    self.put([self.msg_x, self.msg_y + line],
-                             self.overlay_bg + self.overlay_fg + Style.NORMAL + s)
-                    s = word + " "
-                    line += 1
-                elif index + 1 == words:
-                    s += word + " "
-                    self.put([self.msg_x, self.msg_y + line],
-                             self.overlay_bg + self.overlay_fg + Style.NORMAL + s)
-                    line += 1
-                else:
-                    s += word + " "
+            wrapped = self.word_wrapped_text(self.dialog_msg)
+            for i, line in enumerate(wrapped):
+                self.put([self.msg_x, self.msg_y + i],
+                         self.overlay_bg + self.overlay_fg + Style.NORMAL + line)
 
-            # Draw the footer text
-            self.put([1, self.Y_MAX - 1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
+        # Draw the footer text
+        self.put([1, self.Y_MAX - 1], self.outer_bg + self.footer_fg + self.footer_style + self.footer_text)
 
         # Draw the buttons just in case something needs to be changed
         self.draw_buttons()
@@ -273,13 +271,42 @@ class Menu:
         self.is_ok_dialog()
         self.dialog_msg = msg
 
+    def word_wrapped_text(self, text):
+        wrapped_lines = []
+        line = ""
+        #lines_done = 0
+        words = len(text.split())
+        for index, word in enumerate(text.split()):
+            word = word.strip()
+            if len(line + word + " ") >= self.overlay_width - 2:
+                wrapped_lines.append(line)
+                line = word + " "
+                #lines_done += 1
+            elif index + 1 == words:
+                line += word + " "
+                wrapped_lines.append(line)
+            else:
+                line += word + " "
+        return wrapped_lines
+
     def msg(self, text):
         x,y = self.msg_x, self.msg_y
 
-        for j in range(self.overlay_left + 1, self.overlay_right - 1):
-            self.put([j, y], self.overlay_bg + " ")
+        if len(text) > self.overlay_width - 2:
 
-        self.put([x, y], self.overlay_bg + self.overlay_fg + self.overlay_style + text)
+            wrapped_text = self.word_wrapped_text(text)
+            for i, line in enumerate(wrapped_text):
+                for j in range(self.overlay_left + 1, self.overlay_right - 1):
+                    self.put([j, y + i], self.overlay_bg + " ")
+                self.put([x, y + i], self.overlay_bg + self.overlay_fg + self.msg_style + line)
+
+            #wrapped_text = self.word_wrapped_text(text)
+
+        else:
+            for j in range(self.overlay_left + 1, self.overlay_right - 1):
+                self.put([j, y], self.overlay_bg + " ")
+
+            self.put([x, y], self.overlay_bg + self.overlay_fg + self.msg_style + text)
 
 
 
