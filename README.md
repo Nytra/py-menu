@@ -1,5 +1,5 @@
 # PyMenu-Framework
-A Python3 based framework for creating simple but intuitive text-based menu interfaces.
+A Python3 based framework for creating simple but intuitive text-based menu interfaces. Includes support for text entry and dialog boxes with multiple options within them.
 
 ---
 
