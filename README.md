@@ -3,6 +3,10 @@ A Python3 based framework for creating simple but intuitive text-based menu inte
 
 ---
 
+![Image of PyMenu](https://github.com/Nytra/PyMenu-Framework/images/main_menu.PNG)
+
+---
+
 ##How To Use The PyMenu Framework
 Create a new menu object and initialise it with a title, description and optional footer.
 Buttons can be added to the menu by calling the .add method and passing it a name and a function pointer.
