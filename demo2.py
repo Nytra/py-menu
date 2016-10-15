@@ -56,9 +56,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
             def set(colour):
                 global global_outer_bg
-                c.outer_bg = colour
-                m.outer_bg = colour
-                sc.outer_bg = colour
+                Menu.outer_bg = colour
                 global_outer_bg = colour
                 c.redraw()
 
@@ -79,9 +77,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
             def set(colour):
                 global global_overlay_bg
-                c.overlay_bg = colour
-                m.overlay_bg = colour
-                sc.overlay_bg = colour
+                Menu.overlay_bg = colour
                 global_overlay_bg = colour
                 c.redraw()
 
@@ -152,8 +148,8 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         def colours():
 
             def set_colour(colour):
-                tm.outer_bg = colour
-                pm.outer_bg = colour
+                Menu.outer_bg = colour
+                Menu.outer_bg = colour
                 tm.quit()
 
             tm = Menu("Colour Choice", "Make A Decision", "")
@@ -178,6 +174,13 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         pm.start()
         m.redraw()
 
+    def text_test():
+        tm = Menu("Text Editor", "Edit", "Press escape to return to the previous menu.")
+        Menu.overlay_bg = global_overlay_bg
+        tm.set_text_box()
+        tm.start()
+        m.redraw()
+
     #title = input("Menu title: ")
 
     pitch = 400
@@ -187,9 +190,10 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
     m = Menu("Main Menu", "Choose An Option")
     m.set_program_title(Menu.prog_title + " Demonstration")
-    m.overlay_bg = global_overlay_bg
+    Menu.overlay_bg = global_overlay_bg
     m.add("Hello World", target=test_function)
     m.add("Dialog Boxes", target=dialog_demo)
+    m.add("Text Editor", target=text_test)
     m.add("Beeping", target= beep_menu)
     m.add("Colour Settings", target=sys_config)
     m.add("Exit", target= lambda: quit() )

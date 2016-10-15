@@ -12,18 +12,18 @@ init(autoreset=True)
 
 class Menu:
 
-    prog_title = "PyMenu V0.92a"
+    prog_title = "PyMenu V0.94a"
+
+    overlay_bg = Back.WHITE
+    overlay_fg = Fore.BLACK
+    overlay_style = Style.NORMAL
+
+    outer_bg = Back.BLUE
+    outer_fg = Fore.WHITE
+    outer_style = Style.BRIGHT
 
     def __init__(self, title="", desc="", footer_text="Use the arrow keys to highlight an option and then press enter to select it."):
         self.options = []
-
-        self.outer_bg = Back.BLUE
-        self.outer_fg = Fore.WHITE
-        self.outer_style = Style.BRIGHT
-
-        self.overlay_bg = Back.WHITE
-        self.overlay_fg = Fore.BLACK
-        self.overlay_style = Style.BRIGHT
 
         self.msg_style = Style.NORMAL
 
@@ -50,7 +50,6 @@ class Menu:
         self.accent_style = Style.BRIGHT
 
         self.title = title # The menu title
-        #self.prog_title =
 
         self.footer_text = footer_text
 
@@ -59,8 +58,10 @@ class Menu:
         self.alive = True
 
         self.ok_dialog = False
+        self.text_box = False
         self.dialog_msg = ""
         self.buffer = "" # keyboard buffer
+        self.get_kb_input = False
 
         self.update_dimensions()
 
@@ -68,6 +69,13 @@ class Menu:
         Menu.prog_title = name
 
     def update_dimensions(self):
+
+        self.outer_bg = Menu.outer_bg
+        self.outer_fg = Menu.outer_fg
+        self.outer_style = Menu.outer_style
+        self.overlay_bg = Menu.overlay_bg
+        self.overlay_fg = Menu.overlay_fg
+        self.overlay_style = Menu.overlay_style
 
         # Get the latest terminal dimensions
 
@@ -77,16 +85,19 @@ class Menu:
         self.option_width = self.X_MAX // 3
         self.option_height = 1
 
-        if not self.ok_dialog:
+        if self.ok_dialog:
+            wrapped = self.word_wrapped_text(self.dialog_msg)
+            self.overlay_height = len(wrapped) + 4
+            self.overlay_width = self.X_MAX // 2  # len(wrapped[0]) + 4
+            # for line in wrapped:
+            # if len(line) > self.overlay_width - 2:
+            # self.overlay_width = len(line) + 2
+        elif self.text_box:
+            self.overlay_width = self.X_MAX - 8
+            self.overlay_height = self.Y_MAX - 10
+        else:
             self.overlay_width = self.X_MAX // 2
             self.overlay_height = self.Y_MAX // 2
-        else:
-            wrapped = self.word_wrapped_text(self.dialog_msg)
-            self.overlay_height = len(wrapped) +  4
-            self.overlay_width = self.X_MAX // 2 #len(wrapped[0]) + 4
-            #for line in wrapped:
-                #if len(line) > self.overlay_width - 2:
-                    #self.overlay_width = len(line) + 2
 
         self.overlay_top = (self.Y_MAX // 2) - (self.overlay_height // 2) # top y coord
         self.overlay_bottom = self.overlay_top + self.overlay_height # bottom y coord
@@ -199,27 +210,28 @@ class Menu:
         for index, option in enumerate(self.options):
             text = self.options[index][0]
 
-            if not self.ok_dialog:
+            if self.ok_dialog:
+                option_x = self.overlay_left + ((self.overlay_width // (len(self.options) + 1)) * (index + 1)) - (
+                len(text) // 2)  # (self.X_MAX // 2) - (len(text) // 2)  # In the middle
+                option_y = self.overlay_bottom - 2
+            elif self.text_box:
+                pass
+            else:
                 option_x = (self.X_MAX // 2) - (len(text) // 2)  # In the middle
                 option_y = (self.Y_MAX // 2 - (len(self.options) // 2) + options_drawn)
-            else:
-                option_x = self.overlay_left + ((self.overlay_width // (len(self.options) + 1)) * (index + 1)) - (len(text) // 2) #(self.X_MAX // 2) - (len(text) // 2)  # In the middle
-                option_y = self.overlay_bottom - 2
 
             box_x = (self.X_MAX // 2) - (self.overlay_width // 2)
             options_drawn += 1
 
-            if index == self.selected:
-                if not self.ok_dialog:
-                    self.put([box_x + 1, option_y], self.selected_bg + self.selected_fg + self.selected_style + "(" + str(index + 1) + ")")
-                self.put([option_x, option_y], self.selected_bg + self.selected_fg + self.selected_style + text)
-            else:
-                if not self.ok_dialog:
-                    self.put([box_x + 1, option_y], self.overlay_bg + self.overlay_fg + "(" + str(index + 1) + ")")
-                self.put([option_x, option_y], self.overlay_bg + self.overlay_fg + self.option_style + text)
-
-    def is_ok_dialog(self):
-        self.ok_dialog = True
+            if not self.text_box:
+                if index == self.selected:
+                    if not self.ok_dialog:
+                        self.put([box_x + 1, option_y], self.selected_bg + self.selected_fg + self.selected_style + "(" + str(index + 1) + ")")
+                    self.put([option_x, option_y], self.selected_bg + self.selected_fg + self.selected_style + text)
+                else:
+                    if not self.ok_dialog:
+                        self.put([box_x + 1, option_y], self.overlay_bg + self.overlay_fg + "(" + str(index + 1) + ")")
+                    self.put([option_x, option_y], self.overlay_bg + self.overlay_fg + self.option_style + text)
 
     def move_down(self):
         if len(self.options) > 1:
@@ -249,29 +261,42 @@ class Menu:
             if msvcrt.kbhit():
                 key = ord(msvcrt.getch())
 
-                if key == 8:
-                    self.buffer = self.buffer[:-1]
-                    self.msg(self.buffer)
+            # BEGIN TEXT ENTRY CODE
 
-                if str(chr(key)).lower() in "abcdefghijklmnopqrstuvwxyz,./?!\"\'£;:$%^&*()[]{}@#~/\\<>|-_=+¬`¦1234567890 ":
-                    char = str(chr(key))
-                    self.key_buffer(char)
+                if self.get_kb_input:
+                    if key == 8: # Backspace
+                        self.buffer = self.buffer[:-1] # Remove a character from the buffer
+                        self.msg(self.buffer)
+                    if str(chr(key)).lower() in "abcdefghijklmnopqrstuvwxyz,./?!\"\'£;:$%^&*()[]{}@#~/\\<>|-_=+¬`¦1234567890 ":
+                        char = str(chr(key))
+                        self.key_buffer(char)
+                    if key == 156: # 156 = £
+                        self.key_buffer("£")
+                    if key == 27:
+                        self.quit()
+                    if key == 13: # enter, go to next line
+                        pass
+                    if key == 0: # function key
+                        key = ord(msvcrt.getch())
+                        if key == 59: # F1
+                            pass # save file
+
+            # END TEXT ENTRY CODE
+
+                if key == 13 and not self.text_box:  # enter key
+                    # self.put([1, 1], "")
+                    f = self.options[self.selected][1]
+                    f()
 
                 if not self.ok_dialog:
                     if key == 224: # arrow key
                         key = ord(msvcrt.getch())
-
                         if key == 80: # down
                             self.move_down()
                             self.draw_buttons()
                         elif key == 72: # up
                             self.move_up()
                             self.draw_buttons()
-
-                    elif key == 13: # enter key
-                        #self.put([1,1], "")
-                        f = self.options[self.selected][1]
-                        f()
                 else:
                     if key == 224:  # arrow key
                         key = ord(msvcrt.getch())
@@ -281,16 +306,12 @@ class Menu:
                         elif key == 77:  # right
                             self.move_down()
                             self.draw_buttons()
-                    elif key == 13:  # enter key
-                        #self.put([1, 1], "")
-                        f = self.options[self.selected][1]
-                        f()
 
     def quit(self):
         self.alive = False
 
     def set_dialog_msg(self, msg):
-        self.is_ok_dialog()
+        self.ok_dialog = True
         self.dialog_msg = msg
 
     def word_wrapped_text(self, text):
@@ -311,16 +332,44 @@ class Menu:
                 line += word + " "
         return wrapped_lines
 
+    def set_text_box(self):
+        self.text_box = True
+        self.get_kb_input = True
+
+    def move_cursor_down(self):
+        code = lambda x,y: '\x1b[1B'
+        print(code, end="")
+
+    def move_cursor_back(self, n):
+        code = lambda n: '\x1b[%dD' % n
+        print(code, end = "")
+
     def msg(self, text):
         x,y = self.msg_x, self.msg_y
 
         if len(text) > self.overlay_width - 2:
 
             wrapped_text = self.word_wrapped_text(text)
-            for i, line in enumerate(wrapped_text):
-                for j in range(self.overlay_left + 1, self.overlay_right - 1):
-                    self.put([j, y + i], self.overlay_bg + " ")
-                self.put([x, y + i], self.overlay_bg + self.overlay_fg + self.msg_style + line)
+            if len(wrapped_text) > 1:
+                for i, line in enumerate(wrapped_text):
+                    for j in range(self.overlay_left + 1, self.overlay_right - 1):
+                        self.put([j, y + i], self.overlay_bg + " ")
+                    self.put([x, y + i], self.overlay_bg + self.overlay_fg + self.msg_style + line)
+            else:
+                clean = False
+                for char in text:
+                    if y > self.msg_y and not clean:
+                        clean = True
+                        for j in range(self.overlay_left + 1, self.overlay_right - 1):
+                            self.put([j, y], self.overlay_bg + " ")
+                    if x > self.overlay_width - 1:
+                        y += 1
+                        clean = False
+                        x = self.msg_x
+                        for j in range(self.overlay_left + 1, self.overlay_right - 1):
+                            self.put([j, y], self.overlay_bg + " ")
+                    self.put([x, y], self.overlay_bg + self.overlay_fg + self.msg_style + char)
+                    x += 1
 
             #wrapped_text = self.word_wrapped_text(text)
 
