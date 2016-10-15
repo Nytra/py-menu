@@ -3,7 +3,7 @@ A Python3 based framework for creating simple but intuitive text-based menu inte
 
 ---
 
-![Image of PyMenu](https://github.com/Nytra/PyMenu-Framework/images/main_menu.PNG)
+![Image of PyMenu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/main_menu.PNG)
 
 ---
 
