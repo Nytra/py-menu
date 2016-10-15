@@ -1,7 +1,7 @@
-import menu
+import pymenu
 
 # Initialise Colorama
-menu.init()
+pymenu.init()
 
 
 
@@ -11,7 +11,7 @@ def hello():
 
 # This next function will create a new menu within the main menu (Allows you to have buttons that bring up different menu screens)
 def new_menu():
-    newMenu = menu.Menu("Second Menu", "This is a separate menu", "This is some different footer text")
+    newMenu = pymenu.Menu("Second Menu", "This is a separate menu", "This is some different footer text")
 
     newMenu.set_program_title("PyMenu Demonstration") # Again we should set the program title
 
@@ -25,7 +25,7 @@ def new_menu():
 
 
 # Create a new menu object. Menu(Title, Description, Footer)
-myMenu = menu.Menu("Main Menu", "This is a short description of the menu.", "This is some footer text.")
+myMenu = pymenu.Menu("Main Menu", "This is a short description of the menu.", "This is some footer text.")
 
 myMenu.set_program_title("PyMenu Demonstration") # We should display the name of our program in the bottom right.
 
