@@ -175,7 +175,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         m.redraw()
 
     def text_test():
-        tm = Menu("Text Editor", "Edit", "Press escape to return to the previous menu.")
+        tm = Menu("Text Editor", "Edit", "[ESC - exit] [F1 - save] [F2 - load]")
         #Menu.overlay_bg = global_overlay_bg
         tm.set_text_box()
         tm.start()

@@ -60,10 +60,16 @@ class Menu:
         self.ok_dialog = False
         self.text_box = False
         self.dialog_msg = ""
-        self.buffer = "" # keyboard buffer
+        #self.buffer = "" # keyboard buffer
+
         self.get_kb_input = False
 
+        self.lines = [] # used for the text editor
+
         self.update_dimensions()
+
+        self.cursor_x = self.msg_x
+        self.cursor_y = self.msg_y
 
     def set_program_title(self, name):
         Menu.prog_title = name
@@ -116,6 +122,10 @@ class Menu:
 
         self.msg_x = self.overlay_left + 1
         self.msg_y = self.overlay_top + 1
+
+        #self.buffer = []
+        #for y in range(self.overlay_top + 1, self.overlay_bottom - 2):
+            #self.buffer.append([0]*self.overlay_width-2)
 
     def add(self, text, target):
 
@@ -253,8 +263,44 @@ class Menu:
                 self.selected -= 1
 
     def key_buffer(self, char):
-        self.buffer += char
-        self.msg(self.buffer)
+        #self.buffer[self.cursor_y - self.overlay_top + 1][self.cursor_x - self.overlay_left + 1] = char
+        #self.msg(self.buffer)
+
+        #x = self.msg_x
+        #y = self.msg_y
+
+        #for c in self.buffer:
+
+        c = char
+
+        if self.cursor_x > self.overlay_right - 2:
+            if self.cursor_y != self.overlay_bottom - 2:
+                self.cursor_x = self.msg_x
+                self.cursor_y += 1
+            else:
+                self.cursor_x -= 1 # THIS IS HACKY I DONT LIKE IT
+
+            #if self.cursor_y >= self.overlay_bottom - 1:
+                #self.cursor_y = self.overlay_bottom - 2
+
+        self.put([self.cursor_x, self.cursor_y], self.overlay_bg + self.overlay_fg + c)
+        self.cursor_x += 1
+
+    def backspace(self):
+        self.cursor_x -= 1
+        if self.cursor_x <= self.overlay_left:
+
+            if self.cursor_y == self.msg_y:
+                self.cursor_x = self.msg_x
+            else:
+                self.cursor_x = self.overlay_right - 2
+                self.cursor_y -= 1
+
+                if self.cursor_y <= self.overlay_top:
+                    self.cursor_y = self.overlay_top + 1
+
+        self.put([self.cursor_x, self.cursor_y], self.overlay_bg + " ")
+        self.put([self.cursor_x, self.cursor_y], self.overlay_bg + "")
 
     def start(self):
         self.redraw()
@@ -263,6 +309,9 @@ class Menu:
             if [self.X_MAX, self.Y_MAX] != [os.get_terminal_size().columns, os.get_terminal_size().lines + 1]: #[shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1]:
                 self.redraw()
 
+                self.cursor_x = self.msg_x
+                self.cursor_y = self.msg_y
+
             if msvcrt.kbhit():
                 key = ord(msvcrt.getch())
 
@@ -270,8 +319,9 @@ class Menu:
 
                 if self.get_kb_input:
                     if key == 8: # Backspace
-                        self.buffer = self.buffer[:-1] # Remove a character from the buffer
-                        self.msg(self.buffer)
+                        #self.buffer = self.buffer[:-1] # Remove a character from the buffer
+                        #self.msg(self.buffer)
+                        self.backspace()
                     if str(chr(key)).lower() in "abcdefghijklmnopqrstuvwxyz,./?!\"\'£;:$%^&*()[]{}@#~/\\<>|-_=+¬`¦1234567890 ":
                         char = str(chr(key))
                         self.key_buffer(char)
@@ -280,7 +330,13 @@ class Menu:
                     if key == 27:
                         self.quit()
                     if key == 13: # enter, go to next line
-                        pass
+                        #self.move_cursor_down()
+                        if self.cursor_y != self.overlay_bottom - 2:
+                            self.cursor_y += 1
+                            self.cursor_x = self.msg_x
+                        if self.cursor_y >= self.overlay_bottom - 1:
+                            self.cursor_y = self.overlay_bottom - 2
+                        self.move_cursor_to([self.cursor_x, self.cursor_y])
                     if key == 0: # function key
                         key = ord(msvcrt.getch())
                         if key == 59: # F1
@@ -319,6 +375,26 @@ class Menu:
         self.ok_dialog = True
         self.dialog_msg = msg
 
+    def set_outer_bg(self, c):
+        Menu.outer_bg = c
+        self.redraw()
+
+    def set_overlay_bg(self, c):
+        Menu.overlay_bg = c
+        self.redraw()
+
+    def set_title(self, title):
+        self.title = title
+        self.redraw()
+
+    def set_desc(self, desc):
+        self.desc = desc
+        self.redraw()
+
+    def set_footer(self, text):
+        self.footer_text = text
+        self.redraw()
+
     def word_wrapped_text(self, text):
         wrapped_lines = []
         line = ""
@@ -340,14 +416,30 @@ class Menu:
     def set_text_box(self):
         self.text_box = True
         self.get_kb_input = True
+        self.update_dimensions()
+        self.cursor_x = self.msg_x
+        self.cursor_y = self.msg_y
 
-    def move_cursor_down(self):
-        code = lambda x,y: '\x1b[1B'
-        print(code, end="")
+    def move_cursor_up(self, n=1):
+        code = lambda n: '\x1b[%dA' % n
+        print(code(n), end="")
 
-    def move_cursor_back(self, n):
+    def move_cursor_down(self, n=1):
+        code = lambda n: '\x1b[%dB' % n
+        print(code(n), end="")
+
+    def move_cursor_back(self, n=1):
         code = lambda n: '\x1b[%dD' % n
-        print(code, end = "")
+        print(code(n), end = "")
+
+    def move_cursor_right(self, n=1):
+        code = lambda n: '\x1b[%dC' % n
+        print(code(n), end="")
+
+    def move_cursor_to(self, coords):
+        x,y = coords
+        pos = lambda x, y: '\x1b[%d;%dH' % (y, x)
+        print(pos(x,y), end="")
 
     def msg(self, text):
         x,y = self.msg_x, self.msg_y
