@@ -176,8 +176,22 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
 
     def text_test():
         tm = Menu("Text Editor", "Edit", "Press escape to return to the previous menu.")
-        Menu.overlay_bg = global_overlay_bg
+        #Menu.overlay_bg = global_overlay_bg
         tm.set_text_box()
+        tm.start()
+        m.redraw()
+
+    def quit_prompt():
+
+        def quit():
+            tm.quit()
+            m.quit()
+
+        tm = Menu("Exit", "", "")
+        #Menu.overlay_bg = global_overlay_bg
+        tm.set_dialog_msg("Are you sure you want to quit?")
+        tm.add("Yes", quit)
+        tm.add("No", tm.quit)
         tm.start()
         m.redraw()
 
@@ -196,7 +210,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     m.add("Text Editor", target=text_test)
     m.add("Beeping", target= beep_menu)
     m.add("Colour Settings", target=sys_config)
-    m.add("Exit", target= lambda: quit() )
+    m.add("Exit", target= quit_prompt )
     try:
         m.start()
     except Exception as e:

@@ -82,6 +82,8 @@ class Menu:
         #self.X_MAX, self.Y_MAX = shutil.get_terminal_size((80, 20)).columns, shutil.get_terminal_size((80, 20)).lines + 1
         self.X_MAX, self.Y_MAX = os.get_terminal_size().columns, os.get_terminal_size().lines + 1
 
+        #os.system('mode con: cols=%d lines=%d' % (self.X_MAX, self.Y_MAX))
+
         self.option_width = self.X_MAX // 3
         self.option_height = 1
 
@@ -130,12 +132,15 @@ class Menu:
         print(pos(x,y) + text, end = "")
 
     def redraw(self): # redraw the whole menu
+
+        if not self.alive:
+            return
+
         self.update_dimensions()
 
         for y in range(1, self.Y_MAX):
-            for x in range(1, self.X_MAX):
-
-                self.put([x,y], self.outer_bg + " ")
+            #for x in range(1, self.X_MAX):
+            self.put([1,y], self.outer_bg + " " * self.X_MAX)
 
         self.draw_overlay()
         self.draw_buttons()
@@ -148,8 +153,8 @@ class Menu:
 
         # Draw the white overlay background
         for y in range(self.overlay_top, self.overlay_bottom):
-            for x in range(self.overlay_left, self.overlay_right):
-                self.put([x, y], self.overlay_bg + " ")
+            #for x in range(self.overlay_left, self.overlay_right):
+            self.put([self.overlay_left, y], self.overlay_bg + " " * self.overlay_width)
 
         # Draw the overlay shadow
         for y in range(self.overlay_top + 1, self.overlay_bottom):
