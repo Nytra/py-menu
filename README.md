@@ -37,6 +37,12 @@ PyMenu is designed to be easily implemented alongside existing code. The possibi
 
 ---
 
+![Image of Dialog Code](https://github.com/Nytra/PyMenu-Framework/blob/master/images/demo3.png?raw=true)
+
+This is an example of how a dialog box may be created with PyMenu.
+
+---
+
 ##Limitations
 
 ---
