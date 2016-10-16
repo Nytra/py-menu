@@ -60,7 +60,7 @@ class Menu:
         self.ok_dialog = False
         self.text_box = False
         self.dialog_msg = ""
-        #self.buffer = "" # keyboard buffer
+        self.buffer = "" # keyboard buffer
 
         self.get_kb_input = False
 
@@ -225,7 +225,7 @@ class Menu:
         for index, option in enumerate(self.options):
             text = self.options[index][0]
 
-            if self.ok_dialog:
+            if self.ok_dialog or self.text_box:
                 option_x = self.overlay_left + ((self.overlay_width // (len(self.options) + 1)) * (index + 1)) - (
                 len(text) // 2)  # (self.X_MAX // 2) - (len(text) // 2)  # In the middle
                 option_y = self.overlay_bottom - 2
@@ -264,6 +264,7 @@ class Menu:
 
     def key_buffer(self, char):
         #self.buffer[self.cursor_y - self.overlay_top + 1][self.cursor_x - self.overlay_left + 1] = char
+        self.buffer += char
         #self.msg(self.buffer)
 
         #x = self.msg_x
@@ -302,6 +303,9 @@ class Menu:
         self.put([self.cursor_x, self.cursor_y], self.overlay_bg + " ")
         self.put([self.cursor_x, self.cursor_y], self.overlay_bg + "")
 
+    def get_entry(self):
+        return self.buffer
+
     def start(self):
         self.redraw()
         while self.alive:
@@ -319,7 +323,7 @@ class Menu:
 
                 if self.get_kb_input:
                     if key == 8: # Backspace
-                        #self.buffer = self.buffer[:-1] # Remove a character from the buffer
+                        self.buffer = self.buffer[:-1] # Remove a character from the buffer
                         #self.msg(self.buffer)
                         self.backspace()
                     if str(chr(key)).lower() in "abcdefghijklmnopqrstuvwxyz,./?!\"\'£;:$%^&*()[]{}@#~/\\<>|-_=+¬`¦1234567890 ":
@@ -330,13 +334,17 @@ class Menu:
                     if key == 27:
                         self.quit()
                     if key == 13: # enter, go to next line
+                        if self.ok_dialog:
+                            f = self.options[self.selected][1]
+                            f()
                         #self.move_cursor_down()
-                        if self.cursor_y != self.overlay_bottom - 2:
-                            self.cursor_y += 1
-                            self.cursor_x = self.msg_x
-                        if self.cursor_y >= self.overlay_bottom - 1:
-                            self.cursor_y = self.overlay_bottom - 2
-                        self.move_cursor_to([self.cursor_x, self.cursor_y])
+                        else:
+                            if self.cursor_y != self.overlay_bottom - 2:
+                                self.cursor_y += 1
+                                self.cursor_x = self.msg_x
+                            if self.cursor_y >= self.overlay_bottom - 1:
+                                self.cursor_y = self.overlay_bottom - 2
+                            self.move_cursor_to([self.cursor_x, self.cursor_y])
                     if key == 0: # function key
                         key = ord(msvcrt.getch())
                         if key == 59: # F1
@@ -372,6 +380,7 @@ class Menu:
         self.alive = False
 
     def set_dialog_msg(self, msg):
+        self.update_dimensions()
         self.ok_dialog = True
         self.dialog_msg = msg
 
@@ -413,12 +422,18 @@ class Menu:
                 line += word + " "
         return wrapped_lines
 
-    def set_text_box(self):
+    def set_text_box(self, message=""):
         self.text_box = True
         self.get_kb_input = True
         self.update_dimensions()
-        self.cursor_x = self.msg_x
-        self.cursor_y = self.msg_y
+        if message:
+            self.set_dialog_msg(message)
+            self.cursor_x = self.msg_x + (self.overlay_width // 3)#(self.overlay_width // 3)
+            self.cursor_y = self.msg_y + 1#(self.overlay_height // 2)
+            #self.overlay_height += 4
+        else:
+            self.cursor_x = self.msg_x
+            self.cursor_y = self.msg_y
 
     def move_cursor_up(self, n=1):
         code = lambda n: '\x1b[%dA' % n

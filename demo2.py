@@ -181,6 +181,17 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         tm.start()
         m.redraw()
 
+    def text_entry():
+        tm = Menu("Text Entry", "Employee Information", "")
+        # Menu.overlay_bg = global_overlay_bg
+        tm.set_text_box("Please enter your name: ")
+        tm.add("OK", tm.quit)
+        tm.start()
+        name = tm.get_entry()
+        print(name)
+        input()
+        m.redraw()
+
     def quit_prompt():
 
         def quit():
@@ -208,6 +219,7 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
     m.add("Hello World", target=test_function)
     m.add("Dialog Boxes", target=dialog_demo)
     m.add("Text Editor", target=text_test)
+    m.add("Text Entry", target=text_entry)
     m.add("Beeping", target= beep_menu)
     m.add("Colour Settings", target=sys_config)
     m.add("Exit", target= quit_prompt )
