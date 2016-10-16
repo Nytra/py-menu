@@ -140,7 +140,7 @@ class Menu:
 
         for y in range(1, self.Y_MAX):
             #for x in range(1, self.X_MAX):
-            self.put([1,y], self.outer_bg + " " * self.X_MAX)
+            self.put([1,y], self.outer_bg + " " * (self.X_MAX - 1))
 
         self.draw_overlay()
         self.draw_buttons()
