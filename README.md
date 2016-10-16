@@ -41,6 +41,8 @@ PyMenu is designed to be easily implemented alongside existing code. The possibi
 
 This is an example of how a dialog box may be created with PyMenu.
 
+Further example code can be found within the file called demo2.py. This is the file that I personally use for all of my testing so it is always up to date.
+
 ---
 
 ##Limitations
