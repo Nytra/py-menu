@@ -5,7 +5,7 @@ import msvcrt, os
 # Created and developed by Sam Scott, aged 17 years and 7 months
 # 13-10-2016
 
-# GitHub Repo: https://github.com/Nytra/py-menu
+# GitHub Repo: https://github.com/Nytra/PyMenu-Framework
 # Here you'll be able to find all of the latest updates as soon as they're available
 
 init(autoreset=True)
