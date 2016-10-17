@@ -100,7 +100,7 @@ class Menu:
             # for line in wrapped:
             # if len(line) > self.overlay_width - 2:
             # self.overlay_width = len(line) + 2
-        elif self.text_box:
+        elif self.text_box and not self.ok_dialog:
             self.overlay_width = self.X_MAX - 8
             self.overlay_height = self.Y_MAX - 10
         else:
@@ -122,6 +122,10 @@ class Menu:
 
         self.msg_x = self.overlay_left + 1
         self.msg_y = self.overlay_top + 1
+
+        #if self.text_box and self.ok_dialog:
+            #self.msg_x = self.overlay_left + (self.overlay_width // 4)
+            #self.msg_y = self.overlay_top + 2
 
         #self.buffer = []
         #for y in range(self.overlay_top + 1, self.overlay_bottom - 2):
@@ -238,7 +242,7 @@ class Menu:
             box_x = (self.X_MAX // 2) - (self.overlay_width // 2)
             options_drawn += 1
 
-            if not self.text_box:
+            if not self.text_box or self.ok_dialog:
                 if index == self.selected:
                     if not self.ok_dialog:
                         self.put([box_x + 1, option_y], self.selected_bg + self.selected_fg + self.selected_style + "(" + str(index + 1) + ")")
@@ -380,7 +384,8 @@ class Menu:
         self.alive = False
 
     def set_dialog_msg(self, msg):
-        self.update_dimensions()
+        #self.update_dimensions()
+        #self.cursor_y = self.msg_y + 1
         self.ok_dialog = True
         self.dialog_msg = msg
 
@@ -425,13 +430,17 @@ class Menu:
     def set_text_box(self, message=""):
         self.text_box = True
         self.get_kb_input = True
-        self.update_dimensions()
+
         if message:
-            self.set_dialog_msg(message)
-            self.cursor_x = self.msg_x + (self.overlay_width // 3)#(self.overlay_width // 3)
-            self.cursor_y = self.msg_y + 1#(self.overlay_height // 2)
+            self.set_desc(message)
+            self.set_dialog_msg("")
+            self.update_dimensions()
+            self.cursor_x = self.msg_x
+            self.cursor_y = self.msg_y
+            self.move_cursor_to([self.cursor_x, self.cursor_y])
             #self.overlay_height += 4
         else:
+            self.update_dimensions()
             self.cursor_x = self.msg_x
             self.cursor_y = self.msg_y
 

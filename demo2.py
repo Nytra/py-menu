@@ -182,14 +182,27 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
         m.redraw()
 
     def text_entry():
-        tm = Menu("Text Entry", "Employee Information", "")
-        # Menu.overlay_bg = global_overlay_bg
-        tm.set_text_box("Please enter your name: ")
-        tm.add("OK", tm.quit)
-        tm.start()
-        name = tm.get_entry()
-        print(name)
-        input()
+
+        def greet(name):
+            gm = Menu("Welcome!", "Welcome!", "")
+            gm.set_dialog_msg("Welcome, " + name + "!")
+            gm.add("OK", gm.quit)
+            gm.start()
+            m.redraw()
+
+        name = ""
+        while not name:
+            tm = Menu("Text Entry", "Employee Information", "")
+            # Menu.overlay_bg = global_overlay_bg
+            tm.set_text_box("Please enter your name: ")
+            tm.add("OK", tm.quit)
+            tm.start()
+            name = tm.get_entry()
+
+        greet(name)
+
+        #print(name)
+        #input()
         m.redraw()
 
     def quit_prompt():
