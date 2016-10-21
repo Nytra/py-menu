@@ -415,16 +415,21 @@ class Menu:
         #lines_done = 0
         words = len(text.split())
         for index, word in enumerate(text.split()):
-            word = word.strip()
-            if len(line + word + " ") >= self.overlay_width - 2:
+            #word = word.strip()
+            if r"\n" in word:
+                line += word.split(r"\n")[0] + " "
                 wrapped_lines.append(line)
-                line = word + " "
-                #lines_done += 1
-            elif index + 1 == words:
-                line += word + " "
-                wrapped_lines.append(line)
+                line = word.split(r"\n")[1] + " "
             else:
-                line += word + " "
+                if len(line + word + " ") >= self.overlay_width - 2:
+                    wrapped_lines.append(line)
+                    line = word + " "
+                    #lines_done += 1
+                elif index + 1 == words:
+                    line += word + " "
+                    wrapped_lines.append(line)
+                else:
+                    line += word + " "
         return wrapped_lines
 
     def set_text_box(self, message=""):
@@ -499,29 +504,3 @@ class Menu:
                 self.put([j, y], self.overlay_bg + " ")
 
             self.put([x, y], self.overlay_bg + self.overlay_fg + self.msg_style + text)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

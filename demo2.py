@@ -164,12 +164,29 @@ if __name__ == "__main__": # A simple menu demonstration will run whenever this 
             tm.start()
             pm.redraw()
 
+        def employee_info():
+            tm = Menu("Employee Info", "Sam Scott's Information", "")
+            tm.set_dialog_msg(
+                r"""
+                Name: Sam Scott\n
+                Date Of Birth: 04/03/1999\n
+                Job Title: Project Manager\n
+                Pay Per Hour: £24\n
+                Phone Number: 07534841819\n
+                Home Address: 142 Vicarage Road"""
+
+            )
+            tm.add("OK", tm.quit)
+            tm.start()
+            pm.redraw()
+
         #tm = Menu("Colour Choice", "Make A Decision", "")
         pm.add("Alice in Wonderland", alice)
         pm.add("Error Message", error_msg)
         pm.add("Small Dialog Box", short_msg)
         pm.add("Confirmation Dialog Box", choice)
         pm.add("Colour Selection", colours)
+        pm.add("Employee Info", employee_info)
         pm.add("Back", pm.quit)
         pm.start()
         m.redraw()
