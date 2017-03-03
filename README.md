@@ -1,7 +1,7 @@
 # PyMenu-Framework
 A Python (3.1+) based framework for creating simple and intuitive graphical menu interfaces.
 
-Supported operating systems: Windows (Linux support will not be difficult to implement but is not a huge concern at the moment)
+Supported operating systems: Windows
 
 Main features: 
 - Can take user input in the form of strings as well as boolean checkboxes. 
