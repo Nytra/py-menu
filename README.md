@@ -1,5 +1,14 @@
 # PyMenu-Framework
-A Python (3.3+) based framework for creating simple and intuitive text-based menu interfaces. Includes support for text entry and dialog boxes with multiple options within them.
+A Python (3.1+) based framework for creating simple and intuitive graphical menu interfaces. 
+
+Main features: 
+- Can take user input in the form of strings as well as boolean checkboxes. 
+- Can display information in the form of text boxes (With word-wrapping functionality)
+- Menus can contain many different buttons and inputs simultaneously.
+- Input is asynchronous (ie the program doesn't halt when an input is being taken)
+- Menus are resized dynamically depending on the number and scale of the elements within them.
+- Buttons are linked to existing functions within the program.
+- Menus can be stacked. If one is closed then the previous one is started up again.
 
 ---
 
@@ -17,7 +26,7 @@ PyMenu can display dialog boxes which contain text. The text will be automatical
 
 ![Image of Dialog Box Options](https://github.com/Nytra/PyMenu-Framework/blob/master/images/dialog_choices.png)
 
-Dialog boxes are capable of containing many different options.
+Dialog boxes are capable of containing many different buttons as well as multiple types of inputs.
 
 ---
 
@@ -27,26 +36,3 @@ The framework will automatically detect when the terminal dimensions have change
 
 ---
 
-##How To Use The PyMenu Framework
-
----
-
-![Image of PyMenu Code](https://github.com/Nytra/PyMenu-Framework/blob/master/images/demo.png)
-
-PyMenu is designed to be easily implemented alongside existing code. The possibilities are practically endless.
-
----
-
-![Image of Dialog Code](https://github.com/Nytra/PyMenu-Framework/blob/master/images/demo3.png?raw=true)
-
-This is an example of how a dialog box may be created with PyMenu.
-
-Further example code can be found within the file called demo2.py. This is the file that I personally use for all of my testing so it is always up to date, but often very messy.
-
----
-
-##Limitations
-
----
-
-PyMenu currently does not support scrolling of any kind. So any text that exceeds the maximum overlay height will spill out onto the background. I am working on this.
