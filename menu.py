@@ -1,9 +1,11 @@
 from colorama import *
-from colorama_utils import *
 import msvcrt, time, os
 init()
 
 __author__ = "Sam Scott <samueltscott@gmail.com>"
+
+def draw(x, y, text):
+    print("\x1b[{};{}H".format(y, x) + text, end="")  # Move the cursor to the given coordinates and then print the text
 
 class Menu:
 
