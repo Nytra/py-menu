@@ -68,8 +68,8 @@ def scrolling():
     m.start()
 
 m = Menu("Main Menu")
-m.set_footer("")
-m.set_program_title("")
+m.set_footer("This is some footer text.")
+m.set_program_title("PyMenu Demo")
 m.add_button("Scrolling", scrolling)
 m.add_button("Inputs", inputs)
 m.add_button("Quit", quit_prompt)
