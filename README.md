@@ -4,6 +4,13 @@ A Python 3 based framework for creating simple and intuitive text-based menu int
 ---
 
 ![Main Menu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/mainmenu.png)
+![Scrolling Buttons](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollbuttons.png)
+![Scrolling Inputs](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollinputs.png)
+![Scrolling Text](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrolltext.png)
+![Inputs](https://github.com/Nytra/PyMenu-Framework/blob/master/images/inputs.png)
+![Input Feedback](https://github.com/Nytra/PyMenu-Framework/blob/master/images/inputfeedback.png)
+![Quit Prompt](https://github.com/Nytra/PyMenu-Framework/blob/master/images/quitprompt.png)
+![Quit Prompt Popup](https://github.com/Nytra/PyMenu-Framework/blob/master/images/quitpromptpopup.png)
 
 ---
 
