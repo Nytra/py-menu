@@ -17,3 +17,16 @@ Main features:
 - Menus are resized dynamically depending on the number and scale of the elements within them.
 - Buttons are linked to existing functions within the program.
 - Menus can be stacked. If one is closed then the previous one is started up again.
+
+---
+
+Navigation:
+- Left & Right Arrow Keys: Select horizontal options.
+- Up & Down Arrow Keys: Select vertical options.
+- Enter: Activates the selected button.
+- Space: Toggle checkboxes.
+- Tab: Selects the next button/input.
+- F5: Redraws the current menu.
+- F1: Displays this navigation information.
+- Escape: Closes the current menu.
+- Any option highlighted in blue is currently selected.
