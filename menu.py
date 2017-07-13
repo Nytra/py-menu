@@ -24,7 +24,7 @@ class Menu:
     KB_F2 = 60
     KB_F3 = 61
     KB_F4 = 62
-    KB_F5 = 63
+    #KB_F5 = 63 # Note: F5 is used to redraw the current menu and thus cannot be bound to any other functions
     KB_F6 = 64
     KB_F7 = 65
     KB_F8 = 66
