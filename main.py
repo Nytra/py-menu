@@ -42,15 +42,9 @@ def scrolling():
     m.add_button("Back", m.quit)
     m.start()
 
-Menu.draw_debug_messages = False
 m = Menu("Main Menu")
 m.set_footer("")
 m.set_program_title("")
 m.add_button("Scrolling", scrolling)
 m.add_button("Quit", m.quit)
-
-try:
-    m.start()
-except Exception as e:
-    print(e)
-    input()
+m.start()
