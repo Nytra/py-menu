@@ -5,8 +5,6 @@ init()
 
 __author__ = "Sam Scott <samueltscott@gmail.com>"
 
-# i apologise in advance for the messiness of this code.
-
 class Menu:
 
     compatibility_mode = True # when True: maintains a 80x24 interface size.
@@ -14,7 +12,7 @@ class Menu:
                               # i recommend keeping this set to True as the scaling system isn't perfect and draw speeds could be extremely slow on large displays (like 1 or 2 seconds which is far too long)
 
     instance_num = 0
-    menu_being_displayed = 0 # the id of the menu which is currently being displayed
+    menu_being_displayed = 0 # the id of the menu which is currently being displayed (ie top of the menu stack)
 
     bindings = {} # stores keybindings and function pointers
 
@@ -31,11 +29,9 @@ class Menu:
     KB_F9 = 67
     KB_F10 = 68
 
-    staffid = "" # stores the ID of the person that is currently logged in
-    staffid_prefix = "Staff ID: " # the text that comes before the staffid
-    program_title = ""
-    debug_message = ""
-    draw_debug_messages = True
+    program_title = "" # Appears at the very top of the menu.
+    debug_message = "" # Only displayed if draw_debug_messages is set to True.
+    draw_debug_messages = False
 
     # Interface colours and styles are defined below
 
@@ -70,18 +66,22 @@ class Menu:
     accent_style = overlay_style
     accent_alt_style = Style.BRIGHT
 
-    #X_MAX = 119
-    #Y_MAX = 30
+    # You can mess around with the values below if you like.
+    # On a 1920x1080p display, the values X_MAX = 119, Y_MAX = 30 seem to work quite well (on my own PC at least).
+    # The values 80, 24 will work on all kinds of displays, which is why they are being used here.
+
+    DEFAULT_X_MAX = 80
+    DEFAULT_Y_MAX = 24
 
     try:
         if not compatibility_mode:
             X_MAX, Y_MAX = os.get_terminal_size().columns - 1, os.get_terminal_size().lines - 1  # Python 3.3+ is required for this to work
         else:
-            X_MAX = 80
-            Y_MAX = 24
+            X_MAX = DEFAULT_X_MAX
+            Y_MAX = DEFAULT_Y_MAX
     except:
-        X_MAX = 80 # 80x24 is the default size of the terminals in my school
-        Y_MAX = 24
+        X_MAX = DEFAULT_X_MAX
+        Y_MAX = DEFAULT_Y_MAX
 
     @classmethod # this is called a decorator, it tells Python that the next function is going to be a class method and not an instance method
     def bind(cls, key, func): # allows you to bind specific keys to specific functions in the main program. defined as a class method so that it applies to all menu objects that are created
@@ -89,7 +89,7 @@ class Menu:
         cls.bindings[key] = func
         # pressing the key when the main program is running will execute the function
 
-    def __init__(self, title, description="", footer="Press F1 for information about how to navigate the system."):
+    def __init__(self, title, description="", footer=""):
         # this is the class constructor, it is executed automatically whenever a new Menu object is created.
         # 'self' refers to the unique Menu instance/object as opposed to the class as a whole
         # for example, below there is self.title, self.desc etc, these are the object's attributes
@@ -190,11 +190,11 @@ class Menu:
             if not Menu.compatibility_mode:
                 Menu.X_MAX, Menu.Y_MAX = os.get_terminal_size().columns - 1, os.get_terminal_size().lines - 1  # Python 3.3+ is required for this to work
             else:
-                Menu.X_MAX = 80
-                Menu.Y_MAX = 24
+                Menu.X_MAX = Menu.DEFAULT_X_MAX
+                Menu.Y_MAX = Menu.DEFAULT_Y_MAX
         except:
-            Menu.X_MAX = 80
-            Menu.Y_MAX = 24
+            Menu.X_MAX = Menu.DEFAULT_X_MAX
+            Menu.Y_MAX = Menu.DEFAULT_Y_MAX
 
         if self.is_prompt:
             wrapped = self.word_wrapped_text(self.prompt_msg)
@@ -335,11 +335,6 @@ class Menu:
         draw(1, title_y - 1, Menu.outer_bg + Menu.outer_fg + Menu.outer_style + "─" * Menu.X_MAX)
         draw(title_x, title_y, Menu.outer_bg + Menu.outer_fg + Menu.outer_style + self.title)
         draw(1, title_y + 1, Menu.outer_bg + Menu.outer_fg + Menu.outer_style + "─" * Menu.X_MAX)
-
-        # ===== Draw MMaL staff id in the top left
-        staffid = Menu.staffid
-        if staffid:
-            draw(1, title_y, Menu.outer_bg + Menu.outer_fg + Menu.outer_style + Menu.staffid_prefix + staffid)
 
     def draw_overlay(self):
         self.update_dimensions()
@@ -631,7 +626,7 @@ class Menu:
         while self.is_active:
 
             try:
-                if not Menu.compatibility_mode and [Menu.X_MAX, Menu.Y_MAX] != [get_terminal_size()[0] - 1, get_terminal_size()[1] - 1]: #[os.get_terminal_size().columns - 1, os.get_terminal_size().lines - 1]:
+                if not Menu.compatibility_mode and [Menu.X_MAX, Menu.Y_MAX] != [os.get_terminal_size().columns - 1, os.get_terminal_size().lines - 1]:
                     self.draw_menu()
             except:
                 pass
@@ -658,22 +653,6 @@ class Menu:
                     elif key in list(Menu.bindings.keys()):
                         Menu.bindings[key]()
                         continue
-                    #elif key == 59 and self.title != "Help": # F1, the title check is there to prevent people from opening multiple help menus on top of each other
-                        #m = Menu("Help")
-                        #.set_popup(True)
-                        #m.add_text("Left & Right Arrow Keys: Select horizontal options.")
-                        #m.add_text("Up & Down Arrow Keys: Select vertical options.")
-                        #m.add_text("Enter: Activates the selected button.")
-                        #m.add_text("Space: Toggle checkboxes.")
-                        #m.add_text("Tab: Selects the next button/input.")
-                        #m.add_text("F5: Redraws the current menu.")
-                        #m.add_text("F1: Displays this navigation information.")
-                        #m.add_text("Escape: Closes the current menu.")
-                        #m.add_text("Any option highlighted in blue is currently selected.")
-
-                        #m.add_button("OK", m.quit)
-                        #m.start()
-                        #continue
 
                 if not self.is_prompt: # ie the menu has its buttons arranged vertically
                     if key == 224: # arrow key
