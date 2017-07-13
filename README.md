@@ -2,6 +2,7 @@
 A Python 3 based framework for creating simple and intuitive text-based menu interfaces.
 
 Supported operating systems: Windows
+
 Note: The msvcrt library is the only thing that is preventing this from being able to run on other operating systems.
 
 Main features: 
