@@ -27,6 +27,5 @@ Navigation:
 - Space: Toggle checkboxes.
 - Tab: Selects the next button/input.
 - F5: Redraws the current menu.
-- F1: Displays this navigation information.
 - Escape: Closes the current menu.
 - Any option highlighted in blue is currently selected.
