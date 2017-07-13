@@ -3,6 +3,10 @@ A Python 3 based framework for creating simple and intuitive text-based menu int
 
 ---
 
+![Main Menu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/mainmenu.png)
+
+---
+
 Supported operating systems: Windows
 
 Note: The msvcrt library is the only thing that is preventing this from being able to run on other operating systems.
