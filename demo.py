@@ -6,6 +6,7 @@ def dummy():
 
 def quit_prompt():
     m = Menu("Quit Prompt")
+    m.set_popup(True)
     m.set_prompt("Are you sure you want to quit?")
     m.add_button("Yes", quit)
     m.add_button("No", m.quit)
