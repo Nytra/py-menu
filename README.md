@@ -4,7 +4,9 @@ A Python 3 based framework for creating simple and intuitive text-based menu int
 ---
 
 ![Main Menu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/mainmenu.png)
+
 Menus can contain a number of different elements. This one contains three buttons. Each button is linked to a specific funtion in the program. Pressing enter while a button is selected will execute the aforementioned function. In this case, the functions displayed here will each create a new menu instance and display it on top of the current one.
+
 ![Scrolling Buttons](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollbuttons.png)
 ![Scrolling Inputs](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollinputs.png)
 ![Scrolling Text](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrolltext.png)
