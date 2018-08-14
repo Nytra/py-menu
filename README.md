@@ -1,6 +1,8 @@
 # PyMenu
 A Python 3 based framework for creating simple and intuitive graphical menu interfaces.
 
+Requires Colorama: https://github.com/tartley/colorama
+
 ---
 
 ![Main Menu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/mainmenu.png)
