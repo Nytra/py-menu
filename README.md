@@ -9,7 +9,7 @@ Menus can contain a number of different elements. This one contains three button
 
 ![Scrolling Buttons](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollbuttons.png)
 
-The framework will display a scrollbar if the number of elements is too large. In this example, I am scrolling down through a list of buttons. In the bottom right-hand corner there is a counter which displays the number of the button that is currently selected, as well as the total number of buttons.
+The framework will display a scrollbar if the number of elements is too large. In this example, I am scrolling down through a list of buttons. In the bottom right-hand corner there is a counter which displays the number of the button that is currently selected (index + 1), as well as the total number of buttons.
 
 ![Scrolling Inputs](https://github.com/Nytra/PyMenu-Framework/blob/master/images/scrollinputs.png)
 
