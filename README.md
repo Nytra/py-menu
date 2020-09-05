@@ -5,6 +5,8 @@ Requires Colorama: https://github.com/tartley/colorama
 
 ---
 
+Abstraction: Menu is an object. It can contain buttons, input fields, and text. Buttons can occupy the body of the menu, as well as the footer of the menu. Typically the footer is reserved for options like "Okay", "Back", "Help". Input fields can only occupy the body of the menu. They come in the form of text input and boolean input. Type checking should be done outside of the framework by code that you write. Large bodies of text in menus cannot coexist with inputs.
+
 ![Main Menu](https://github.com/Nytra/PyMenu-Framework/blob/master/images/mainmenu.png)
 
 Menus can contain a number of different elements. This one contains three buttons. Each button is linked to a specific function in the program. Pressing enter while a button is selected will execute the aforementioned function. In this case, the functions displayed here will each create a new menu instance and display it on top of the current one.
